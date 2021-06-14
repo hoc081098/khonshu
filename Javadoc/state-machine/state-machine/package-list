@@ -1,0 +1,8 @@
+$dokka.format:gfm-v1
+$dokka.linkExtension:md
+$dokka.location:com.freeletics.mad.statemachine////PointingToDeclaration/state-machine/com.freeletics.mad.statemachine/index.md
+$dokka.location:com.freeletics.mad.statemachine/StateMachine///PointingToDeclaration/state-machine/com.freeletics.mad.statemachine/-state-machine/index.md
+$dokka.location:com.freeletics.mad.statemachine/StateMachine/dispatch/#TypeParam(bounds=[kotlin.Any])/PointingToDeclaration/state-machine/com.freeletics.mad.statemachine/-state-machine/dispatch.md
+$dokka.location:com.freeletics.mad.statemachine/StateMachine/state/#/PointingToDeclaration/state-machine/com.freeletics.mad.statemachine/-state-machine/state.md
+com.freeletics.mad.statemachine
+
