@@ -1,2 +1,4 @@
+include ":loona:compiler", ":loona:runtime"
+include ":navigator"
 include ":state-machine"
 include ":text-resource"
