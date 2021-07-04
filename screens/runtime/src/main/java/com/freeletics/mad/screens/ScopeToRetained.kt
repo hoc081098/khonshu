@@ -1,4 +1,4 @@
-package com.freeletics.mad.loona
+package com.freeletics.mad.screens
 
 import javax.inject.Scope
 import kotlin.annotation.AnnotationRetention.RUNTIME

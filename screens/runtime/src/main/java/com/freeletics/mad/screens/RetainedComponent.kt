@@ -1,7 +1,7 @@
-package com.freeletics.mad.loona
+package com.freeletics.mad.screens
 
-import com.freeletics.mad.loona.internal.EmptyNavigationHandler
-import com.freeletics.mad.loona.internal.EmptyNavigator
+import com.freeletics.mad.screens.internal.EmptyNavigationHandler
+import com.freeletics.mad.screens.internal.EmptyNavigator
 import com.freeletics.mad.navigator.NavigationHandler
 import com.freeletics.mad.navigator.Navigator
 import com.gabrielittner.renderer.ViewRenderer
@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
  * [com.squareup.anvil.annotations.MergeComponent.scope], so it can be used to contribute modules
  * and bindings to the generated component.
  *
- * E.g. for `@LoonaRenderer(...) class CoachScreen` the scope of the generated component will be
+ * E.g. for `@ScreensRenderer(...) class CoachScreen` the scope of the generated component will be
  * `ScopeToRetained(CoachScreen::class)`, modules can be contributed with
  * `@ContributesTo(CoachScreen::class)` and bindings with
  * `@ContributesBinding(CoachScreen::class, ...)`.
@@ -49,7 +49,7 @@ import kotlin.reflect.KClass
  * The component will be held until the `ViewModel` is cleared. This means that it and everything
  * else using it's  scope will survive configuration changes and will stay active while the screen
  * is on the backstack. The generated `ViewModel` will be used by one of the classes generated
- * through the [Compose], [ComposeFragment] and [RendererFragment] annotations.
+ * through the [ComposeScreen], [ComposeFragment] and [RendererFragment] annotations.
  */
 @Target(CLASS)
 @Retention(RUNTIME)
@@ -121,14 +121,15 @@ annotation class RetainedComponent(
  */
 @Target(CLASS)
 @Retention(RUNTIME)
-annotation class Compose
+annotation class ComposeScreen
 
 /**
  * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same class
  * that [RetainedComponent] is used on.
  *
- * By adding this annotation the same [androidx.compose.runtime.Composable] function that [Compose]
- * generates is generated. See the documention of [Compose] for more information about that.
+ * By adding this annotation the same [androidx.compose.runtime.Composable] function that
+ * [ComposeScreen] generates is generated. See the documention of [ComposeScreen] for more
+ * information about that.
  *
  * In addition a [androidx.fragment.app.Fragment] is generated. This Fragment will use
  * [androidx.compose.ui.platform.ComposeView] as it's view and will call the generated composable

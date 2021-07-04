@@ -1,4 +1,4 @@
-package com.freeletics.mad.loona.internal
+package com.freeletics.mad.screens.internal
 
 import android.content.Context
 import androidx.compose.runtime.Composable
@@ -10,6 +10,7 @@ import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import kotlin.reflect.KClass
@@ -23,7 +24,7 @@ import kotlin.reflect.KClass
  *
  * To be used in generated code.
  */
-@InternalLoonaApi
+@InternalScreensApi
 fun <D> viewModelProvider(
     fragment: Fragment,
     scope: KClass<*>,
@@ -34,7 +35,7 @@ fun <D> viewModelProvider(
     return ViewModelProvider(fragment, viewModelFactory)
 }
 
-@InternalLoonaApi
+@InternalScreensApi
 @Composable
 fun <D> rememberViewModelProvider(
     scope: KClass<*>,

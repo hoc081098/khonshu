@@ -1,4 +1,4 @@
-package com.freeletics.mad.loona
+package com.freeletics.mad.screens
 
 import com.google.auto.service.AutoService
 import com.squareup.anvil.annotations.ExperimentalAnvilApi
@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.psi.KtFile
 
 @OptIn(ExperimentalAnvilApi::class)
 @AutoService(CodeGenerator::class)
-class LoonaCodeGenerator : CodeGenerator {
+class ScreenCodeGenerator : CodeGenerator {
 
     override fun isApplicable(context: AnvilContext): Boolean = !context.disableComponentMerging
 
@@ -44,26 +44,26 @@ class LoonaCodeGenerator : CodeGenerator {
         clazz: KtClassOrObject
     ): GeneratedFile? {
         val component = clazz.findAnnotation(retainedComponentFqName, module) ?: return null
-        var loona = component.toLoonaAnnotation(module)
+        var screens = component.toScreenData(module)
 
         val compose = clazz.findAnnotation(composeFqName, module)
         if (compose != null) {
-            loona = loona.copy(extra = Extra.Compose(withFragment = false))
+            screens = screens.copy(extra = Extra.Compose(withFragment = false))
         }
 
         val composeFragment = clazz.findAnnotation(composeFragmentFqName, module)
         if (composeFragment != null) {
-            loona = loona.copy(extra = Extra.Compose(withFragment = true))
+            screens = screens.copy(extra = Extra.Compose(withFragment = true))
         }
 
         val renderer = clazz.findAnnotation(rendererFragmentFqName, module)
         if (renderer != null) {
             val factory = renderer.requireClassArgument("rendererFactory", 0, module)
-            loona = loona.copy(extra = Extra.Renderer(factory))
+            screens = screens.copy(extra = Extra.Renderer(factory))
         }
 
         val scopeClass = clazz.asClassName()
-        val file = FileGenerator(scopeClass, loona).generate()
+        val file = FileGenerator(scopeClass, screens).generate()
         return createGeneratedFile(
             codeGenDir = codeGenDir,
             packageName = file.packageName,
@@ -72,9 +72,9 @@ class LoonaCodeGenerator : CodeGenerator {
         )
     }
 
-    private fun KtAnnotationEntry.toLoonaAnnotation(
+    private fun KtAnnotationEntry.toScreenData(
         module: ModuleDescriptor
-    ) = LoonaAnnotation(
+    ) = ScreenData(
         parentScope = requireClassArgument("parentScope", 0, module),
         dependencies = requireClassArgument("dependencies", 1, module),
         stateMachine = requireClassArgument("stateMachine", 2, module),
@@ -85,7 +85,7 @@ class LoonaCodeGenerator : CodeGenerator {
         extra = null
     ).clearEmptyNavigation(this)
 
-    private fun LoonaAnnotation.clearEmptyNavigation(element: PsiElement): LoonaAnnotation {
+    private fun ScreenData.clearEmptyNavigation(element: PsiElement): ScreenData {
         // both parameters were set -> generate navigator
         if (navigator != emptyNavigator && navigationHandler != emptyNavigationHandler) {
             return this

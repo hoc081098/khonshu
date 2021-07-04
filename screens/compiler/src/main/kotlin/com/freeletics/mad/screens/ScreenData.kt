@@ -1,8 +1,8 @@
-package com.freeletics.mad.loona
+package com.freeletics.mad.screens
 
 import com.squareup.kotlinpoet.ClassName
 
-data class LoonaAnnotation(
+data class ScreenData(
     val parentScope: ClassName,
     val dependencies: ClassName,
 
