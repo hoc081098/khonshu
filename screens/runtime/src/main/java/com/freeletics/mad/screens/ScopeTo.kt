@@ -9,11 +9,11 @@ import kotlin.reflect.KClass
  * to an entry on the backstack.
  *
  * In the case of [androidx.fragment.app.Fragment] this means that classes annotated with
- * [ScopeToRetained] will survive configuration changes and will be kept alive while the `Fragment`
+ * [ScopeTo] will survive configuration changes and will be kept alive while the `Fragment`
  * is on the backstack. The life time of the scope would end when the `Fragment` is popped from the
  * backstack.
  */
 @Scope
 @Retention(RUNTIME)
 @MustBeDocumented
-annotation class ScopeToRetained(val marker: KClass<*>)
+annotation class ScopeTo(val marker: KClass<*>)

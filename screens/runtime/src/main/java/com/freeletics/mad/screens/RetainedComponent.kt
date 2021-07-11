@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  * Annotate a marker class that represents a screen to enable generating a Dagger component
  * that survives configuration changes.
  *
- * The generated component uses [ScopeToRetained] as it's scope where the [ScopeToRetained.marker]
+ * The generated component uses [ScopeTo] as it's scope where the [ScopeTo.marker]
  * parameter is the class annotated with [RetainedComponent]. This scope can be used to scope classes
  * in the component an tie them to to component's life time. The annotated class is also used as
  * [com.squareup.anvil.annotations.MergeComponent.scope], so it can be used to contribute modules

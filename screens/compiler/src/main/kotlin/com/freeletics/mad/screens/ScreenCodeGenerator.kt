@@ -1,5 +1,12 @@
 package com.freeletics.mad.screens
 
+import com.freeletics.mad.screens.codegen.FileGenerator
+import com.freeletics.mad.screens.codegen.composeFqName
+import com.freeletics.mad.screens.codegen.composeFragmentFqName
+import com.freeletics.mad.screens.codegen.emptyNavigationHandler
+import com.freeletics.mad.screens.codegen.emptyNavigator
+import com.freeletics.mad.screens.codegen.rendererFragmentFqName
+import com.freeletics.mad.screens.codegen.retainedComponentFqName
 import com.google.auto.service.AutoService
 import com.squareup.anvil.annotations.ExperimentalAnvilApi
 import com.squareup.anvil.compiler.api.AnvilCompilationException
@@ -19,6 +26,7 @@ import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClassLiteralExpression
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtConstantExpression
 import org.jetbrains.kotlin.psi.KtFile
 
 @OptIn(ExperimentalAnvilApi::class)
@@ -74,37 +82,36 @@ class ScreenCodeGenerator : CodeGenerator {
 
     private fun KtAnnotationEntry.toScreenData(
         module: ModuleDescriptor
-    ) = ScreenData(
-        parentScope = requireClassArgument("parentScope", 0, module),
-        dependencies = requireClassArgument("dependencies", 1, module),
-        stateMachine = requireClassArgument("stateMachine", 2, module),
-        navigator = requireClassArgument("navigator", 3, module),
-        navigationHandler = requireClassArgument("navigationHandler", 4, module),
-        coroutinesEnabled = requireBooleanArgument("coroutinesEnabled", 5, module),
-        rxJavaEnabled = requireBooleanArgument("rxJavaEnabled", 6, module),
-        extra = null
-    ).clearEmptyNavigation(this)
+    ): ScreenData {
+        return ScreenData(
+            parentScope = requireClassArgument("parentScope", 0, module),
+            dependencies = requireClassArgument("dependencies", 1, module),
+            stateMachine = requireClassArgument("stateMachine", 2, module),
+            navigation = toNavigation(module),
+            coroutinesEnabled = optionalBooleanArgument("coroutinesEnabled", 5, module) ?: false,
+            rxJavaEnabled = optionalBooleanArgument("rxJavaEnabled", 6, module) ?: false,
+            extra = null
+        )
+    }
 
-    private fun ScreenData.clearEmptyNavigation(element: PsiElement): ScreenData {
-        // both parameters were set -> generate navigator
-        if (navigator != emptyNavigator && navigationHandler != emptyNavigationHandler) {
-            return this
+    private fun KtAnnotationEntry.toNavigation(
+        module: ModuleDescriptor
+    ): Navigation? {
+        val navigator = optionalClassArgument("navigator", 3, module)
+        val navigationHandler = optionalClassArgument("navigationHandler", 4, module)
+
+        if (navigator != null && navigationHandler != null &&
+            navigator != emptyNavigator && navigationHandler != emptyNavigationHandler) {
+            return Navigation(navigator, navigationHandler)
+        }
+        if (navigator == null && navigationHandler == null) {
+            return null
+        }
+        if (navigator == emptyNavigator && navigationHandler == emptyNavigationHandler) {
+            return null
         }
 
-        if (navigator == emptyNavigator) {
-            throw AnvilCompilationException(
-                "navigator needs to be set if navigationHandler was set",
-                element = element
-            )
-        }
-        if (navigationHandler == emptyNavigationHandler) {
-            throw AnvilCompilationException(
-                "navigationHandler needs to be set if navigator was set",
-                element = element
-            )
-        }
-
-        return copy(navigator = null, navigationHandler = null)
+        throw IllegalStateException("navigator and navigationHandler need to be set together")
     }
 
     private fun KtAnnotationEntry.requireClassArgument(
@@ -117,9 +124,22 @@ class ScreenCodeGenerator : CodeGenerator {
             return classLiteralExpression.requireFqName(module).asClassName(module)
         }
         throw AnvilCompilationException(
-            "Couldn't find parentScope for ${requireFqName(module)}",
+            "Couldn't find $name for ${requireFqName(module)}",
             element = this
         )
+    }
+
+    //TODO replace with a way to get default value
+    private fun KtAnnotationEntry.optionalClassArgument(
+        name: String,
+        index: Int,
+        module: ModuleDescriptor
+    ): ClassName? {
+        val classLiteralExpression = findAnnotationArgument<KtClassLiteralExpression>(name, index)
+        if (classLiteralExpression != null) {
+            return classLiteralExpression.requireFqName(module).asClassName(module)
+        }
+        return null
     }
 
     private fun KtAnnotationEntry.requireBooleanArgument(
@@ -127,13 +147,26 @@ class ScreenCodeGenerator : CodeGenerator {
         index: Int,
         module: ModuleDescriptor
     ): Boolean {
-        val boolean = findAnnotationArgument<Boolean>(name, index)
+        val boolean = findAnnotationArgument<KtConstantExpression>(name, index)
         if (boolean != null) {
-            return boolean
+            return boolean.node.firstChildNode.text.toBoolean()
         }
         throw AnvilCompilationException(
-            "Couldn't find parentScope for ${requireFqName(module)}",
+            "Couldn't find $name for ${requireFqName(module)}",
             element = this
         )
+    }
+
+    //TODO replace with a way to get default value
+    private fun KtAnnotationEntry.optionalBooleanArgument(
+        name: String,
+        index: Int,
+        module: ModuleDescriptor
+    ): Boolean? {
+        val boolean = findAnnotationArgument<KtConstantExpression>(name, index)
+        if (boolean != null) {
+            return boolean.node.firstChildNode.text.toBoolean()
+        }
+        return null
     }
 }

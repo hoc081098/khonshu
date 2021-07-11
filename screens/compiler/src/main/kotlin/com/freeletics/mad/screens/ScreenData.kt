@@ -8,13 +8,17 @@ data class ScreenData(
 
     val stateMachine: ClassName,
 
-    val navigator: ClassName?,
-    val navigationHandler: ClassName?,
+    val navigation: Navigation?,
 
     val coroutinesEnabled: Boolean,
     val rxJavaEnabled: Boolean,
 
     val extra: Extra?
+)
+
+data class Navigation(
+    val navigator: ClassName,
+    val navigationHandler: ClassName,
 )
 
 sealed class Extra {
