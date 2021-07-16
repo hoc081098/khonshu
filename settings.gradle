@@ -1,4 +1,4 @@
-include ":screens:compiler", ":screens:runtime"
 include ":navigator"
 include ":state-machine"
 include ":text-resource"
+include ":whetstone:compiler", ":whetstone:runtime"
