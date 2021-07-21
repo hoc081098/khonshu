@@ -4,19 +4,17 @@ import com.freeletics.mad.whetstone.Extra
 import com.freeletics.mad.whetstone.Data
 import com.squareup.anvil.annotations.MergeComponent
 import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.KModifier.ABSTRACT
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 
-internal val Generator.retainedComponentClassName get() = ClassName("Retained${scopeClass.simpleName}Component")
+internal val Generator.retainedComponentClassName get() = ClassName("Retained${data.baseName}Component")
 
 internal const val retainedComponentFactoryCreateName = "create"
 
 internal class RetainedComponentGenerator(
-    override val scopeClass: ClassName,
     override val data: Data,
 ) : Generator() {
 
@@ -33,13 +31,13 @@ internal class RetainedComponentGenerator(
 
     private fun retainedScopeAnnotation(): AnnotationSpec {
         return AnnotationSpec.builder(scopeTo)
-            .addMember("%T::class", scopeClass)
+            .addMember("%T::class", data.scope)
             .build()
     }
 
     private fun componentAnnotation(): AnnotationSpec {
         return AnnotationSpec.builder(MergeComponent::class)
-            .addMember("scope = %T::class", scopeClass)
+            .addMember("scope = %T::class", data.scope)
             .addMember("dependencies = [%T::class]", data.dependencies)
             .build()
     }

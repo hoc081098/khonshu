@@ -1,14 +1,12 @@
 package com.freeletics.mad.whetstone.codegen
 
 import com.freeletics.mad.whetstone.Data
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 
-internal val Generator.composableName get() = scopeClass.simpleName
+internal val Generator.composableName get() = "${data.baseName}Screen"
 
 internal class ComposeGenerator(
-    override val scopeClass: ClassName,
     override val data: Data,
 ) : Generator() {
 
@@ -35,8 +33,7 @@ internal class ComposeGenerator(
             .addCode(composableNavigationSetup())
             .addStatement("val stateMachine = component.%L", data.stateMachine.propertyName)
             .addStatement("val state = stateMachine.state.%M()", collectAsState)
-            //TODO hardcoded suffix Ui for composable
-            .beginControlFlow("%LUi(state.value) { action ->", composableName)
+            .beginControlFlow("%L(state.value) { action ->", data.baseName)
             // dispatch: external method
             .addStatement("scope.%M { stateMachine.dispatch(action) }", launch)
             .endControlFlow()

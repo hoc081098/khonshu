@@ -2,7 +2,6 @@ package com.freeletics.mad.whetstone.codegen
 
 import com.freeletics.mad.whetstone.Extra
 import com.freeletics.mad.whetstone.Data
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
@@ -10,11 +9,10 @@ import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.TypeSpec
 
 internal class RendererFragmentGenerator(
-    override val scopeClass: ClassName,
     override val data: Data,
 ) : Generator() {
 
-    private val rendererFragmentClassName = ClassName("${scopeClass.simpleName}Fragment")
+    private val rendererFragmentClassName = ClassName("${data.baseName}Fragment")
 
     internal fun generate(): TypeSpec {
         check(data.extra is Extra.Renderer)

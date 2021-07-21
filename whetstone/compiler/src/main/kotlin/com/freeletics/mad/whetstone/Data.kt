@@ -3,6 +3,11 @@ package com.freeletics.mad.whetstone
 import com.squareup.kotlinpoet.ClassName
 
 data class Data(
+    val baseName: String,
+    val packageName: String,
+
+    val scope: ClassName,
+
     val parentScope: ClassName,
     val dependencies: ClassName,
 

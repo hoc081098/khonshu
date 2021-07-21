@@ -1,17 +1,15 @@
 package com.freeletics.mad.whetstone.codegen
 
 import com.freeletics.mad.whetstone.Data
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier.OVERRIDE
 import com.squareup.kotlinpoet.TypeSpec
 
 internal class ComposeFragmentGenerator(
-    override val scopeClass: ClassName,
     override val data: Data,
 ) : Generator() {
 
-    private val composeFragmentClassName = ClassName("${scopeClass.simpleName}Fragment")
+    private val composeFragmentClassName = ClassName("${data.baseName}Fragment")
 
     internal fun generate(): TypeSpec {
         return TypeSpec.classBuilder(composeFragmentClassName)

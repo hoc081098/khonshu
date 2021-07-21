@@ -7,20 +7,21 @@ import com.freeletics.mad.navigator.Navigator
 import com.gabrielittner.renderer.ViewRenderer
 import kotlin.annotation.AnnotationRetention.RUNTIME
 import kotlin.annotation.AnnotationTarget.CLASS
+import kotlin.annotation.AnnotationTarget.FUNCTION
 import kotlin.reflect.KClass
 
 /**
- * Annotate a marker class that represents a screen to enable generating a Dagger component
- * that survives configuration changes.
+ * Annotate a `@Compososable` function or `Renderer` class that represents a screen to enable
+ * generating a Dagger component that survives configuration changes.
  *
  * The generated component uses [ScopeTo] as it's scope where the [ScopeTo.marker]
- * parameter is the class annotated with [RetainedComponent]. This scope can be used to scope classes
+ * parameter is the specified [scope] class. This scope can be used to scope classes
  * in the component an tie them to to component's life time. The annotated class is also used as
  * [com.squareup.anvil.annotations.MergeComponent.scope], so it can be used to contribute modules
  * and bindings to the generated component.
  *
- * E.g. for `@RetainedComponent(...) class CoachScreen` the scope of the generated component will be
- * `ScopeTo(CoachScreen::class)`, modules can be contributed with
+ * E.g. for `@RetainedComponent(scope = CoachScreen::class, ...)` the scope of the generated
+ * component will be `ScopeTo(CoachScreen::class)`, modules can be contributed with
  * `@ContributesTo(CoachScreen::class)` and bindings with
  * `@ContributesBinding(CoachScreen::class, ...)`.
  *
@@ -51,9 +52,10 @@ import kotlin.reflect.KClass
  * is on the backstack. The generated `ViewModel` will be used by one of the classes generated
  * through the [ComposeScreen], [ComposeFragment] and [RendererFragment] annotations.
  */
-@Target(CLASS)
+@Target(CLASS, FUNCTION)
 @Retention(RUNTIME)
 annotation class RetainedComponent(
+    val scope: KClass<*>,
     val parentScope: KClass<*>,
     val dependencies: KClass<*>,
 
@@ -68,8 +70,8 @@ annotation class RetainedComponent(
 )
 
 /**
- * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same class
- * that [RetainedComponent] is used on.
+ * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same
+ * `@Composable` function hat [RetainedComponent] is used on.
  *
  * By adding this annotation a [androidx.compose.runtime.Composable] function that uses tbe same
  * name as the annotated class is generated. It expects an [androidx.navigation.NavController] as
@@ -119,13 +121,13 @@ annotation class RetainedComponent(
  * }
  * ```
  */
-@Target(CLASS)
+@Target(CLASS, FUNCTION)
 @Retention(RUNTIME)
 annotation class ComposeScreen
 
 /**
- * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same class
- * that [RetainedComponent] is used on.
+ * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same
+ * `@Composable` function hat [RetainedComponent] is used on.
  *
  * By adding this annotation the same [androidx.compose.runtime.Composable] function that
  * [ComposeScreen] generates is generated. See the documention of [ComposeScreen] for more
@@ -135,13 +137,13 @@ annotation class ComposeScreen
  * [androidx.compose.ui.platform.ComposeView] as it's view and will call the generated composable
  * from it's `setContent` method.
  */
-@Target(CLASS)
+@Target(CLASS, FUNCTION)
 @Retention(RUNTIME)
 annotation class ComposeFragment
 
 /**
- * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same class
- * that [RetainedComponent] is used on.
+ * This is an add-on annotation for the [RetainedComponent] annotation. Use this on the same
+ * `Renderer` class hat [RetainedComponent] is used on.
  *
  * By adding this annotation a [androidx.fragment.app.Fragment] is generated. This
  *
@@ -154,7 +156,7 @@ annotation class ComposeFragment
  * If the 2 optional `navigator` and `navigationHandler` were set on [RetainedComponent] the
  * generated `Fragment` will use these to set up navigation after the injection.
  */
-@Target(CLASS)
+@Target(CLASS, FUNCTION)
 @Retention(RUNTIME)
 annotation class RendererFragment(
     val rendererFactory: KClass<out ViewRenderer.Factory<*, *>>,

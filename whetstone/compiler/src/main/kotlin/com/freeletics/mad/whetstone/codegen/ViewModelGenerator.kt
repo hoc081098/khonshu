@@ -1,7 +1,6 @@
 package com.freeletics.mad.whetstone.codegen
 
 import com.freeletics.mad.whetstone.Data
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -11,12 +10,11 @@ import com.squareup.kotlinpoet.KModifier.PUBLIC
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 
-internal val Generator.viewModelClassName get() = ClassName("${scopeClass.simpleName}ViewModel")
+internal val Generator.viewModelClassName get() = ClassName("${data.baseName}ViewModel")
 
 internal const val viewModelComponentName = "component"
 
 internal class ViewModelGenerator(
-    override val scopeClass: ClassName,
     override val data: Data,
 ) : Generator() {
 
