@@ -9,9 +9,10 @@ import org.junit.Test
 
 class FileGeneratorTest {
 
-    private val scopeClass = ClassName("com.test", "Test")
-
     private val full = Data(
+        baseName = "Test",
+        packageName = "com.test",
+        scope = ClassName("com.test", "TestScreen"),
         parentScope = ClassName("com.test.parent", "TestParentScope"),
         dependencies = ClassName("com.test", "TestDependencies"),
         stateMachine = ClassName("com.test", "TestStateMachine"),
@@ -26,7 +27,7 @@ class FileGeneratorTest {
 
     @Test
     fun `generates code for full ScreenData`() {
-        val generator = FileGenerator(scopeClass, full)
+        val generator = FileGenerator(full)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -47,9 +48,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.cancel
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -97,7 +98,7 @@ class FileGeneratorTest {
     @Test
     fun `generates code for ScreenData without navigation`() {
         val withoutNavigation = full.copy(navigation = null)
-        val generator = FileGenerator(scopeClass, withoutNavigation)
+        val generator = FileGenerator(withoutNavigation)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -117,9 +118,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.cancel
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -163,7 +164,7 @@ class FileGeneratorTest {
     @Test
     fun `generates code for ScreenData without coroutines`() {
         val withoutCoroutines = full.copy(coroutinesEnabled = false)
-        val generator = FileGenerator(scopeClass, withoutCoroutines)
+        val generator = FileGenerator(withoutCoroutines)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -181,9 +182,9 @@ class FileGeneratorTest {
             import kotlin.Unit
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -227,7 +228,7 @@ class FileGeneratorTest {
     @Test
     fun `generates code for ScreenData without rxjava`() {
         val withoutRxJava = full.copy(rxJavaEnabled = false)
-        val generator = FileGenerator(scopeClass, withoutRxJava)
+        val generator = FileGenerator(withoutRxJava)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -247,9 +248,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.cancel
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -279,8 +280,7 @@ class FileGeneratorTest {
               private val scope: CoroutineScope = MainScope()
 
               public val component: RetainedTestComponent =
-                  DaggerRetainedTestComponent.factory().create(dependencies, savedStateHandle, arguments,
-                  scope)
+                  DaggerRetainedTestComponent.factory().create(dependencies, savedStateHandle, arguments, scope)
 
               public override fun onCleared(): Unit {
                 scope.cancel()
@@ -295,7 +295,7 @@ class FileGeneratorTest {
         val without = full.copy(
             extra = Extra.Compose(withFragment = false)
         )
-        val generator = FileGenerator(scopeClass, without)
+        val generator = FileGenerator(without)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -325,9 +325,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.launch
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -371,7 +371,7 @@ class FileGeneratorTest {
 
             @Composable
             @OptIn(InternalWhetstoneApi::class)
-            public fun Test(navController: NavController): Unit {
+            public fun TestScreen(navController: NavController): Unit {
               val scope = rememberCoroutineScope()
 
               val viewModelProvider = rememberViewModelProvider<TestDependencies>(TestParentScope::class) {
@@ -390,7 +390,7 @@ class FileGeneratorTest {
 
               val stateMachine = component.testStateMachine
               val state = stateMachine.state.collectAsState()
-              TestUi(state.value) { action ->
+              Test(state.value) { action ->
                 scope.launch { stateMachine.dispatch(action) }
               }
             }
@@ -404,7 +404,7 @@ class FileGeneratorTest {
             navigation = null,
             extra = Extra.Compose(withFragment = false)
         )
-        val generator = FileGenerator(scopeClass, without)
+        val generator = FileGenerator(without)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -431,9 +431,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.launch
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -473,7 +473,7 @@ class FileGeneratorTest {
 
             @Composable
             @OptIn(InternalWhetstoneApi::class)
-            public fun Test(): Unit {
+            public fun TestScreen(): Unit {
               val scope = rememberCoroutineScope()
 
               val viewModelProvider = rememberViewModelProvider<TestDependencies>(TestParentScope::class) {
@@ -486,7 +486,7 @@ class FileGeneratorTest {
 
               val stateMachine = component.testStateMachine
               val state = stateMachine.state.collectAsState()
-              TestUi(state.value) { action ->
+              Test(state.value) { action ->
                 scope.launch { stateMachine.dispatch(action) }
               }
             }
@@ -499,7 +499,7 @@ class FileGeneratorTest {
         val withComposeFragment = full.copy(
             extra = Extra.Compose(withFragment = true)
         )
-        val generator = FileGenerator(scopeClass, withComposeFragment)
+        val generator = FileGenerator(withComposeFragment)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -535,9 +535,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.launch
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -581,7 +581,7 @@ class FileGeneratorTest {
 
             @Composable
             @OptIn(InternalWhetstoneApi::class)
-            public fun Test(navController: NavController): Unit {
+            public fun TestScreen(navController: NavController): Unit {
               val scope = rememberCoroutineScope()
 
               val viewModelProvider = rememberViewModelProvider<TestDependencies>(TestParentScope::class) {
@@ -600,7 +600,7 @@ class FileGeneratorTest {
 
               val stateMachine = component.testStateMachine
               val state = stateMachine.state.collectAsState()
-              TestUi(state.value) { action ->
+              Test(state.value) { action ->
                 scope.launch { stateMachine.dispatch(action) }
               }
             }
@@ -614,7 +614,7 @@ class FileGeneratorTest {
                 val navController = findNavController()
                 val composeView = ComposeView(requireContext())
                 composeView.setContent {
-                  Test(navController)
+                  TestScreen(navController)
                 }
                 return composeView
               }
@@ -629,7 +629,7 @@ class FileGeneratorTest {
             navigation = null,
             extra = Extra.Compose(withFragment = true)
         )
-        val generator = FileGenerator(scopeClass, withComposeFragmentNoNavigation)
+        val generator = FileGenerator(withComposeFragmentNoNavigation)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -661,9 +661,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.launch
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -703,7 +703,7 @@ class FileGeneratorTest {
 
             @Composable
             @OptIn(InternalWhetstoneApi::class)
-            public fun Test(): Unit {
+            public fun TestScreen(): Unit {
               val scope = rememberCoroutineScope()
 
               val viewModelProvider = rememberViewModelProvider<TestDependencies>(TestParentScope::class) {
@@ -716,7 +716,7 @@ class FileGeneratorTest {
 
               val stateMachine = component.testStateMachine
               val state = stateMachine.state.collectAsState()
-              TestUi(state.value) { action ->
+              Test(state.value) { action ->
                 scope.launch { stateMachine.dispatch(action) }
               }
             }
@@ -729,7 +729,7 @@ class FileGeneratorTest {
               ): View {
                 val composeView = ComposeView(requireContext())
                 composeView.setContent {
-                  Test()
+                  TestScreen()
                 }
                 return composeView
               }
@@ -743,7 +743,7 @@ class FileGeneratorTest {
         val withRenderer = full.copy(
             extra = Extra.Renderer(factory = ClassName("com.test", "RendererFactory"))
         )
-        val generator = FileGenerator(scopeClass, withRenderer)
+        val generator = FileGenerator(withRenderer)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -774,9 +774,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.cancel
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
@@ -868,7 +868,7 @@ class FileGeneratorTest {
             navigation = null,
             extra = Extra.Renderer(factory = ClassName("com.test", "RendererFactory"))
         )
-        val generator = FileGenerator(scopeClass, withRendererNoNavigation)
+        val generator = FileGenerator(withRendererNoNavigation)
 
         generator.generate().toString() shouldBe """
             package com.test
@@ -896,9 +896,9 @@ class FileGeneratorTest {
             import kotlinx.coroutines.cancel
 
             @InternalWhetstoneApi
-            @ScopeTo(Test::class)
+            @ScopeTo(TestScreen::class)
             @MergeComponent(
-              scope = Test::class,
+              scope = TestScreen::class,
               dependencies = [TestDependencies::class]
             )
             internal interface RetainedTestComponent {
